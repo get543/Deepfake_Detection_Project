@@ -131,6 +131,7 @@ def load_model():
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
                 st.success("✅ Model downloaded successfully!")
+                st.write(f"DEBUG: Local path = {LOCAL_MODEL_PATH.absolute()}")
             except Exception as e:
                 st.error(f"❌ Failed to download model: {e}")
                 return None
@@ -259,7 +260,6 @@ model = load_model()
 if model is None:
     st.error(
         f"⚠️ Model tidak ditemukan di:\n`{LOCAL_MODEL_PATH}`\n\n"
-        "Pastikan `best_deepfake_model.keras` ada di folder `notebooks/models/`."
     )
     st.stop()
 
