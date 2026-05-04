@@ -258,9 +258,6 @@ st.divider()
 # ── Cek model ──
 model = load_model()
 if model is None:
-    st.error(
-        f"⚠️ Model tidak ditemukan di:\n`{LOCAL_MODEL_PATH}`\n\n"
-    )
     st.stop()
 
 # ── Upload video ──
