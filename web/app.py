@@ -6,6 +6,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import streamlit as st
+import requests
 import cv2
 import numpy as np
 import tempfile
@@ -23,7 +24,7 @@ tf.get_logger().setLevel(logging.ERROR)
 # === MODEL CONFIGURATION ===
 MODEL_URL = "https://github.com/get543/Deepfake_Detection_Project/releases/download/v1.0/best_deepfake_model_ff_xception.keras"
 # Local cache path (inside your app's working directory)
-LOCAL_MODEL_PATH = Path(__file__).parent.parent / "notebooks" / "models" / "best_deepfake_model_ff_xception.keras"
+LOCAL_MODEL_PATH = Path("models") / "best_deepfake_model_ff_xception.keras"
 IMG_SIZE        = (224, 224)
 FRAMES_TO_SAMPLE = 30
 FACE_CASCADE    = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -107,21 +108,6 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ──────────────────────────────────────────────────────────
-# Load model dengan cache
-# ──────────────────────────────────────────────────────────
-@st.cache_resource
-def load_model():
-    if not LOCAL_MODEL_PATH.exists():
-        return None
-    return tf.keras.models.load_model(str(LOCAL_MODEL_PATH))
-
-
-import streamlit as st
-import tensorflow as tf
-import requests
-from pathlib import Path
-import os
 
 
 # ──────────────────────────────────────────────────────────
