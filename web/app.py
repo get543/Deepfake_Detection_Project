@@ -272,7 +272,7 @@ st.divider()
 model = load_model()
 if model is None:
     st.error(
-        f"⚠️ Model tidak ditemukan di:\n`{MODEL_PATH}`\n\n"
+        f"⚠️ Model tidak ditemukan di:\n`{LOCAL_MODEL_PATH}`\n\n"
         "Pastikan `best_deepfake_model.keras` ada di folder `notebooks/models/`."
     )
     st.stop()
