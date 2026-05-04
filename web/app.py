@@ -20,7 +20,10 @@ tf.get_logger().setLevel(logging.ERROR)
 # ──────────────────────────────────────────────────────────
 # Konstanta
 # ──────────────────────────────────────────────────────────
-MODEL_PATH      = Path(__file__).parent.parent / "notebooks" / "models" / "best_deepfake_model_ff_xception.keras"
+# === MODEL CONFIGURATION ===
+MODEL_URL = "https://github.com/get543/Deepfake_Detection_Project/releases/download/v1.0/best_deepfake_model_ff_xception.keras"
+# Local cache path (inside your app's working directory)
+LOCAL_MODEL_PATH = Path(__file__).parent.parent / "notebooks" / "models" / "best_deepfake_model_ff_xception.keras"
 IMG_SIZE        = (224, 224)
 FRAMES_TO_SAMPLE = 30
 FACE_CASCADE    = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -109,9 +112,9 @@ hr { border-color: rgba(255,255,255,0.08) !important; }
 # ──────────────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    if not MODEL_PATH.exists():
+    if not LOCAL_MODEL_PATH.exists():
         return None
-    return tf.keras.models.load_model(str(MODEL_PATH))
+    return tf.keras.models.load_model(str(LOCAL_MODEL_PATH))
 
 
 import streamlit as st
@@ -125,13 +128,6 @@ import os
 # Fungsi Load Model
 # Load model dengan download model dari github releases
 # ──────────────────────────────────────────────────────────
-
-# === CONFIGURATION ===
-# Replace with your actual release asset URL
-MODEL_URL = "https://github.com/get543/Deepfake_Detection_Project/releases/download/v1.0/best_deepfake_model_ff_xception.keras"
-# Local cache path (inside your app's working directory)
-LOCAL_MODEL_PATH = Path("models") / "best_deepfake_model_ff_xception.keras"
-
 @st.cache_resource
 def load_model():
     # Create directory if needed
