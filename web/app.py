@@ -131,7 +131,6 @@ def load_model():
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
                 st.success("✅ Model downloaded successfully!")
-                st.write(f"DEBUG: Local path = {LOCAL_MODEL_PATH.absolute()}")
             except Exception as e:
                 st.error(f"❌ Failed to download model: {e}")
                 return None
@@ -361,12 +360,15 @@ if uploaded_file and run_detection:
 
             with tab_faces:
                 st.markdown(
-                    "<p style='font-size:0.85rem;color:#64748b;'>5 sampel wajah yang dianalisis oleh model.</p>",
+                    "<p style='font-size:0.85rem;color:#64748b;'>Beberapa sampel wajah yang dianalisis dari video.</p>",
                     unsafe_allow_html=True,
                 )
-                cols = st.columns(5)
-                for i, col in enumerate(cols):
-                    if i < len(face_images):
+                
+                # Menampilkan maksimal 5 wajah pertama sebagai highlight
+                display_count = min(5, len(face_images))
+                if display_count > 0:
+                    cols = st.columns(display_count)
+                    for i, col in enumerate(cols):
                         s       = frame_scores[i]
                         verdict = "Real" if s >= 0.5 else "Fake"
                         c       = "#34d399" if s >= 0.5 else "#f87171"
@@ -376,6 +378,28 @@ if uploaded_file and run_detection:
                             f"{verdict} ({s:.2f})</p>",
                             unsafe_allow_html=True,
                         )
+                
+                # Menampilkan sisa wajah (jika ada) di dalam expander agar UI tidak penuh
+                if len(face_images) > 5:
+                    with st.expander(f"Lihat semua wajah lainnya ({len(face_images) - 5} wajah)"):
+                        remaining_faces = face_images[5:]
+                        remaining_scores = frame_scores[5:]
+                        
+                        # Menampilkan wajah sisa dalam grid dengan 5 kolom per baris
+                        for i in range(0, len(remaining_faces), 5):
+                            row_cols = st.columns(5)
+                            for j in range(5):
+                                if i + j < len(remaining_faces):
+                                    idx = i + j
+                                    s = remaining_scores[idx]
+                                    verdict = "Real" if s >= 0.5 else "Fake"
+                                    c = "#34d399" if s >= 0.5 else "#f87171"
+                                    row_cols[j].image(remaining_faces[idx], width="stretch")
+                                    row_cols[j].markdown(
+                                        f"<p style='text-align:center;color:{c};font-size:0.75rem;margin-top:-6px;'>"
+                                        f"{verdict} ({s:.2f})</p>",
+                                        unsafe_allow_html=True,
+                                    )
 
     finally:
         os.unlink(tmp_path)
