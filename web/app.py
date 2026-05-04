@@ -113,6 +113,55 @@ def load_model():
         return None
     return tf.keras.models.load_model(str(MODEL_PATH))
 
+
+import streamlit as st
+import tensorflow as tf
+import requests
+from pathlib import Path
+import os
+
+
+# ──────────────────────────────────────────────────────────
+# Fungsi Load Model
+# Load model dengan download model dari github releases
+# ──────────────────────────────────────────────────────────
+
+# === CONFIGURATION ===
+# Replace with your actual release asset URL
+MODEL_URL = "https://github.com/get543/Deepfake_Detection_Project/releases/download/v1.0/best_deepfake_model_ff_xception.keras"
+# Local cache path (inside your app's working directory)
+LOCAL_MODEL_PATH = Path("models") / "best_deepfake_model_ff_xception.keras"
+
+@st.cache_resource
+def load_model():
+    # Create directory if needed
+    LOCAL_MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    
+    # If model is not already downloaded, download it
+    if not LOCAL_MODEL_PATH.exists():
+        with st.spinner("📥 Downloading model from GitHub Releases (this may take a few minutes)..."):
+            try:
+                response = requests.get(MODEL_URL, stream=True)
+                response.raise_for_status()  # Check for download errors
+                
+                # Save file in chunks to avoid memory issues
+                with open(LOCAL_MODEL_PATH, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                st.success("✅ Model downloaded successfully!")
+            except Exception as e:
+                st.error(f"❌ Failed to download model: {e}")
+                return None
+    
+    # Load the model from local cache
+    try:
+        model = tf.keras.models.load_model(str(LOCAL_MODEL_PATH))
+        return model
+    except Exception as e:
+        st.error(f"❌ Failed to load model: {e}")
+        return None
+
+
 # ──────────────────────────────────────────────────────────
 # Fungsi prediksi — SAMA PERSIS dengan notebook
 # (predict_video_wajah: setiap frame ke-5, 1 wajah per frame)
